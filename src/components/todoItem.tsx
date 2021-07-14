@@ -3,8 +3,8 @@ import { Todo } from "../models";
 
 interface TodoItemProps {
   todoItem: Todo;
-  dispatch: any;
-  inEditMode: boolean;
+  dispatch?: any;
+  inEditMode?: boolean;
   toggleCompletion?: Function;
 }
 
@@ -16,7 +16,7 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
     : undefined;
 
   const onEditStart =
-    dispatch.startEditItem && dispatch.startEditItem(todoItem.id)
+    dispatch?.startEditItem && dispatch.startEditItem(todoItem.id)
       ? (e: any) => {
           dispatch.startEditItem(todoItem.id)();
           if (inputRef && inputRef.current) inputRef.current.value = todoItem.title;
@@ -24,19 +24,19 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
       : undefined;
 
   const onDelete =
-    dispatch.deleteTodoItem && dispatch.deleteTodoItem(todoItem.id)
+    dispatch?.deleteTodoItem && dispatch.deleteTodoItem(todoItem.id)
       ? (e: any) => {
           dispatch.deleteTodoItem(todoItem.id)();
         }
       : undefined;
 
   const onChangeTitle = (e: any) => {
-    if (e.key === "Enter" && dispatch.setNewTodoTitle) dispatch.setNewTodoTitle(e.target.value)();
-    else if (e.key === "Escape" && dispatch.abortEditItem) dispatch.abortEditItem()();
+    if (e.key === "Enter" && dispatch.setNewTodoTitle) dispatch?.setNewTodoTitle(e.target.value)();
+    else if (e.key === "Escape" && dispatch.abortEditItem) dispatch?.abortEditItem()();
   };
 
   const onStopEdit =
-    dispatch.setNewTodoTitle && dispatch.setNewTodoTitle()
+    dispatch?.setNewTodoTitle && dispatch.setNewTodoTitle()
       ? (e: any) => {
           dispatch.setNewTodoTitle(e.target.value)();
         }

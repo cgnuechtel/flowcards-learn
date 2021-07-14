@@ -1,23 +1,20 @@
 /* eslint-disable require-yield */
 import * as React from "react";
 import "todomvc-app-css/index.css";
-import "todomvc-app-css/index.css";
-import { Main } from "./components/main";
-import { Footer } from "./components/footer";
-import { TodoInput } from "./components/todoInput";
-import { TodoItem } from "./components/todoItem";
-import {
-  scenario,
-  askFor,
-  waitFor,
-  request,
-  set,
-  block
-} from "@flowcards/core";
-import { Todo } from "./models";
+import {Main} from "./components/main";
+import {Footer} from "./components/footer";
+import {TodoInput} from "./components/todoInput";
+import {TodoItem} from "./components/todoItem";
+import {askFor, scenario, set} from "@flowcards/core";
+import {Todo} from "./models";
 import * as utils from "./utils";
-import { useScenarios } from "./useScenarios";
+import {useScenarios} from "./useScenarios";
 import "flowcards-debugger-wc";
+
+const todoEvent = {
+  addTodo: 'addTodo',
+  todos: 'todos'
+};
 
 // REQUIREMENT: user can create a new todo
 function newTodo(title: string) {
@@ -29,7 +26,11 @@ const newTodoCanBeAdded = scenario(
     id: "newTodoCanBeAdded"
   },
   function* () {
-    // TODO
+    while (true) {
+      const bid = yield askFor(todoEvent.addTodo);
+      const todo = newTodo(bid.payload);
+      yield set(todoEvent.todos, (currentTodos: any) => [todo, ...(currentTodos?.value || [])]);
+    }
   }
 );
 
@@ -104,10 +105,10 @@ const completedItemsCanBeCleared = scenario(
 
 export default function App() {
   const context = useScenarios((enable, event) => {
-    // TODO: Enable the scenarios here!
+    enable(newTodoCanBeAdded());
   });
   const { event, scenario } = context;
-  const todos = event<Todo[]>("todos").value || [];
+  const todos = event<Todo[]>(todoEvent.todos).value || [];
   // Requirement 1 - hide Main and Footer when no todos are in the list
   const mainAndFooterElement =
     todos.length === 0 ? null : (
@@ -131,7 +132,7 @@ export default function App() {
       <flowcards-debugger context={context}></flowcards-debugger>
       <header className="header">
         <h1>todos</h1>
-        <TodoInput onEnter={undefined} />
+        <TodoInput onEnter={event(todoEvent.addTodo).dispatch} />
       </header>
       {mainAndFooterElement}
     </React.Fragment>
