@@ -5,7 +5,7 @@ import {Main} from "./components/main";
 import {Footer} from "./components/footer";
 import {TodoInput} from "./components/todoInput";
 import {TodoItem} from "./components/todoItem";
-import {askFor, scenario, set} from "@flowcards/core";
+import {askFor, scenario, set, validate} from "@flowcards/core";
 import {Todo} from "./models";
 import * as utils from "./utils";
 import {useScenarios} from "./useScenarios";
@@ -33,6 +33,18 @@ const newTodoCanBeAdded = scenario(
     }
   }
 );
+
+// Additional REQUIREMENT: user must not create an empty todo
+const noEmptyTodo = scenario(
+  {
+    id: "noEmptyTodo"
+  },
+  function* () {
+    while (true) {
+      yield validate(todoEvent.addTodo, (todoTitle) => todoTitle?.length > 0);
+    }
+  }
+)
 
 // REQUIREMENT: user can toggle complete state of all todos
 function areAllCompleted(todos: Todo[]): boolean {
@@ -106,6 +118,7 @@ const completedItemsCanBeCleared = scenario(
 export default function App() {
   const context = useScenarios((enable, event) => {
     enable(newTodoCanBeAdded());
+    enable(noEmptyTodo());
   });
   const { event, scenario } = context;
   const todos = event<Todo[]>(todoEvent.todos).value || [];
