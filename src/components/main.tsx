@@ -2,32 +2,25 @@ import * as React from "react";
 
 interface MainProps {
   toggleCompleteAll?: Function;
+  allChecked: boolean;
 }
 
 export function Main({
   toggleCompleteAll,
+  allChecked,
   ...props
 }: React.PropsWithChildren<MainProps>) {
-  const setCompleteAll = toggleCompleteAll && toggleCompleteAll(true);
-  const setUnCompleteAll = toggleCompleteAll && toggleCompleteAll(false);
   return (
     <section className="main">
-      {setCompleteAll ? (
+      {toggleCompleteAll ? (
         <input
           id="toggle-all"
           className="toggle-all"
           type="checkbox"
-          checked={false}
-          onChange={setCompleteAll}
-        />
-      ) : null}
-      {setUnCompleteAll ? (
-        <input
-          id="toggle-all"
-          className="toggle-all"
-          type="checkbox"
-          checked={true}
-          onChange={setUnCompleteAll}
+          checked={allChecked}
+          onChange={() => {
+            toggleCompleteAll();
+          }}
         />
       ) : null}
       {toggleCompleteAll ? (

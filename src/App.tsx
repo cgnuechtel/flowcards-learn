@@ -14,7 +14,8 @@ import "flowcards-debugger-wc";
 const todoEvent = {
   addTodo: 'addTodo',
   todos: 'todos',
-  toggle: 'toggle'
+  toggle: 'toggle',
+  toggleCompleteAll: 'toggleCompleteAll'
 };
 
 // REQUIREMENT: user can create a new todo
@@ -59,7 +60,12 @@ const toggleCompleteAll = scenario(
     id: "toggleCompleteAll"
   },
   function* () {
-    // TODO
+    while (true) {
+      yield askFor(todoEvent.toggleCompleteAll);
+      yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => {
+        return setAllCompleted(todos.value, !areAllCompleted(todos.value));
+      })
+    }
   }
 );
 
@@ -130,6 +136,7 @@ export default function App() {
     enable(newTodoCanBeAdded());
     enable(noEmptyTodo());
     enable(toggleCompleteSingle());
+    enable(toggleCompleteAll());
   });
   const { event, scenario } = context;
   const todos = event<Todo[]>(todoEvent.todos).value || [];
@@ -137,7 +144,7 @@ export default function App() {
   const mainAndFooterElement =
     todos.length === 0 ? null : (
       <React.Fragment>
-        <Main toggleCompleteAll={undefined}>
+        <Main toggleCompleteAll={event(todoEvent.toggleCompleteAll).dispatch} allChecked={areAllCompleted(todos)}>
           {todos.map((todo: Todo) => (
             <TodoItem
               todoItem={todo}
