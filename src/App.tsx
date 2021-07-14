@@ -14,16 +14,16 @@ import "flowcards-debugger-wc";
 const todoEvent = {
   addTodo: 'addTodo',
   todos: 'todos',
-  toggle: 'toggle',
-  toggleCompleteAll: 'toggleCompleteAll',
+  toggleTodo: 'toggleTodo',
+  toggleTodos: 'toggleTodos',
   deleteTodo: 'deleteTodo'
 };
 
 // REQUIREMENT: user can create a new to-do
 // VALIDATION: user must not create an empty to-do
-const newTodo = scenario(
+const addTodo = scenario(
   {
-    id: "newTodo"
+    id: "addTodo"
   },
   function* () {
     while (true) {
@@ -45,13 +45,13 @@ function areAllCompleted(todos: Todo[]): boolean {
 function setAllCompleted(todos: Todo[], val: boolean): Todo[] {
   return todos.map((t: Todo) => ({ ...t, isCompleted: val }));
 }
-const toggleCompleteAll = scenario(
+const toggleTodos = scenario(
   {
-    id: "toggleCompleteAll"
+    id: "toggleTodos"
   },
   function* () {
     while (true) {
-      yield askFor(todoEvent.toggleCompleteAll);
+      yield askFor(todoEvent.toggleTodos);
       yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => {
         return setAllCompleted(todos.value, !areAllCompleted(todos.value));
       })
@@ -65,13 +65,13 @@ function toggleItemCompleted(todos: Todo[], id: string): Todo[] {
     id === todo.id ? { ...todo, isCompleted: !todo.isCompleted } : todo
   );
 }
-const toggleCompleteSingle = scenario(
+const toggleTodo = scenario(
   {
-    id: "toggleCompleteSingle"
+    id: "toggleTodo"
   },
   function* () {
     while (true) {
-      const bid = yield askFor(todoEvent.toggle);
+      const bid = yield askFor(todoEvent.toggleTodo);
       const todoId = bid.payload;
       yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => toggleItemCompleted(todos.value, todoId));
     }
@@ -127,9 +127,9 @@ const completedItemsCanBeCleared = scenario(
 
 export default function App() {
   const context = useScenarios((enable, event) => {
-    enable(newTodo());
-    enable(toggleCompleteSingle());
-    enable(toggleCompleteAll());
+    enable(addTodo());
+    enable(toggleTodo());
+    enable(toggleTodos());
     enable(deleteTodo());
   });
   const { event, scenario } = context;
@@ -138,11 +138,11 @@ export default function App() {
   const mainAndFooterElement =
     todos.length === 0 ? null : (
       <React.Fragment>
-        <Main toggleCompleteAll={event(todoEvent.toggleCompleteAll).dispatch} allChecked={areAllCompleted(todos)}>
+        <Main toggleCompleteAll={event(todoEvent.toggleTodos).dispatch} allChecked={areAllCompleted(todos)}>
           {todos.map((todo: Todo) => (
             <TodoItem
               todoItem={todo}
-              toggleCompletion={event(todoEvent.toggle).dispatch}
+              toggleCompletion={event(todoEvent.toggleTodo).dispatch}
               onDelete={event(todoEvent.deleteTodo).dispatch}
               dispatch={undefined}
               inEditMode={false}
