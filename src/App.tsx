@@ -5,7 +5,7 @@ import {Main} from "./components/main";
 import {Footer} from "./components/footer";
 import {TodoInput} from "./components/todoInput";
 import {TodoItem} from "./components/todoItem";
-import {askFor, CachedItem, scenario, set, validate} from "@flowcards/core";
+import {askFor, CachedItem, scenario, set} from "@flowcards/core";
 import {Todo} from "./models";
 import * as utils from "./utils";
 import {useScenarios} from "./useScenarios";
@@ -19,13 +19,14 @@ const todoEvent = {
 };
 
 // REQUIREMENT: user can create a new to-do
+// VALIDATION: user must not create an empty to-do
 const newTodo = scenario(
   {
     id: "newTodo"
   },
   function* () {
     while (true) {
-      const bid = yield askFor(todoEvent.addTodo);
+      const bid = yield askFor(todoEvent.addTodo, (todoTitle) => todoTitle?.length > 0);
       const todo = {
         id: utils.uuid(),
         title: bid.payload,
@@ -35,18 +36,6 @@ const newTodo = scenario(
     }
   }
 );
-
-// Additional REQUIREMENT: user must not create an empty to-do
-const noEmptyTodo = scenario(
-  {
-    id: "noEmptyTodo"
-  },
-  function* () {
-    while (true) {
-      yield validate(todoEvent.addTodo, (todoTitle) => todoTitle?.length > 0);
-    }
-  }
-)
 
 // REQUIREMENT: user can toggle complete state of all todos
 function areAllCompleted(todos: Todo[]): boolean {
