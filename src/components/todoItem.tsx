@@ -11,7 +11,7 @@ interface TodoItemProps {
 export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompletion, inEditMode }: TodoItemProps) {
   const onToggleComplete = toggleCompletion
     ? (e: any) => {
-        toggleCompletion(todoItem.id)();
+        toggleCompletion(todoItem.id);
       }
     : undefined;
 

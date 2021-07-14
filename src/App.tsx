@@ -5,7 +5,7 @@ import {Main} from "./components/main";
 import {Footer} from "./components/footer";
 import {TodoInput} from "./components/todoInput";
 import {TodoItem} from "./components/todoItem";
-import {askFor, scenario, set, validate} from "@flowcards/core";
+import {askFor, CachedItem, scenario, set, validate} from "@flowcards/core";
 import {Todo} from "./models";
 import * as utils from "./utils";
 import {useScenarios} from "./useScenarios";
@@ -13,7 +13,8 @@ import "flowcards-debugger-wc";
 
 const todoEvent = {
   addTodo: 'addTodo',
-  todos: 'todos'
+  todos: 'todos',
+  toggle: 'toggle'
 };
 
 // REQUIREMENT: user can create a new todo
@@ -63,12 +64,21 @@ const toggleCompleteAll = scenario(
 );
 
 // REQUIREMENT: user can toggle the completion-state of a single todo
+function toggleItemCompleted(todos: Todo[], id: string): Todo[] {
+  return todos.map((todo: Todo) =>
+    id === todo.id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+  );
+}
 const toggleCompleteSingle = scenario(
   {
     id: "toggleCompleteSingle"
   },
   function* () {
-    // TODO
+    while (true) {
+      const bid = yield askFor(todoEvent.toggle);
+      const todoId = bid.payload;
+      yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => toggleItemCompleted(todos.value, todoId));
+    }
   }
 );
 
@@ -119,6 +129,7 @@ export default function App() {
   const context = useScenarios((enable, event) => {
     enable(newTodoCanBeAdded());
     enable(noEmptyTodo());
+    enable(toggleCompleteSingle());
   });
   const { event, scenario } = context;
   const todos = event<Todo[]>(todoEvent.todos).value || [];
@@ -130,7 +141,7 @@ export default function App() {
           {todos.map((todo: Todo) => (
             <TodoItem
               todoItem={todo}
-              toggleCompletion={undefined}
+              toggleCompletion={event(todoEvent.toggle).dispatch}
               dispatch={undefined}
               inEditMode={false}
               key={todo.id}
