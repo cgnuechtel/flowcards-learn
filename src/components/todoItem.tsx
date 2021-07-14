@@ -3,12 +3,13 @@ import { Todo } from "../models";
 
 interface TodoItemProps {
   todoItem: Todo;
+  onDelete?: any;
   dispatch?: any;
   inEditMode?: boolean;
   toggleCompletion?: Function;
 }
 
-export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompletion, inEditMode }: TodoItemProps) {
+export const TodoItem = React.memo(function({ todoItem, onDelete, dispatch, toggleCompletion, inEditMode }: TodoItemProps) {
   const onToggleComplete = toggleCompletion
     ? (e: any) => {
         toggleCompletion(todoItem.id);
@@ -20,13 +21,6 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
       ? (e: any) => {
           dispatch.startEditItem(todoItem.id);
           if (inputRef && inputRef.current) inputRef.current.value = todoItem.title;
-        }
-      : undefined;
-
-  const onDelete =
-    dispatch?.deleteTodoItem && dispatch.deleteTodoItem(todoItem.id)
-      ? (e: any) => {
-          dispatch.deleteTodoItem(todoItem.id);
         }
       : undefined;
 
@@ -59,7 +53,7 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
           <input className="toggle" type="checkbox" checked={todoItem.isCompleted} onChange={onToggleComplete} />
         ) : null}
         <label onDoubleClick={onEditStart}>{todoItem.title}</label>
-        {onDelete ? <button className="destroy" onClick={onDelete} /> : null}
+        {onDelete ? <button className="destroy" onClick={() => onDelete(todoItem.id)} /> : null}
       </div>
       <input ref={inputRef} className="edit" onKeyUp={onChangeTitle} onBlur={onStopEdit} />
     </li>

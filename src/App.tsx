@@ -15,7 +15,8 @@ const todoEvent = {
   addTodo: 'addTodo',
   todos: 'todos',
   toggle: 'toggle',
-  toggleCompleteAll: 'toggleCompleteAll'
+  toggleCompleteAll: 'toggleCompleteAll',
+  deleteTodo: 'deleteTodo'
 };
 
 // REQUIREMENT: user can create a new to-do
@@ -81,12 +82,16 @@ const toggleCompleteSingle = scenario(
 function removeTodo(todos: Todo[], id: string): Todo[] {
   return todos.filter((todo: Todo) => id !== todo.id);
 }
-const itemCanBeDeleted = scenario(
+const deleteTodo = scenario(
   {
-    id: "itemCanBeDeleted"
+    id: "deleteTodo"
   },
   function* () {
-    // TODO
+    while (true) {
+      const bid = yield askFor(todoEvent.deleteTodo);
+      const todoId = bid.payload;
+      yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => removeTodo(todos.value, todoId));
+    }
   }
 );
 
@@ -123,9 +128,9 @@ const completedItemsCanBeCleared = scenario(
 export default function App() {
   const context = useScenarios((enable, event) => {
     enable(newTodo());
-    enable(noEmptyTodo());
     enable(toggleCompleteSingle());
     enable(toggleCompleteAll());
+    enable(deleteTodo());
   });
   const { event, scenario } = context;
   const todos = event<Todo[]>(todoEvent.todos).value || [];
@@ -138,6 +143,7 @@ export default function App() {
             <TodoItem
               todoItem={todo}
               toggleCompletion={event(todoEvent.toggle).dispatch}
+              onDelete={event(todoEvent.deleteTodo).dispatch}
               dispatch={undefined}
               inEditMode={false}
               key={todo.id}
