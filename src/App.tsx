@@ -18,7 +18,7 @@ const todoEvent = {
   toggleCompleteAll: 'toggleCompleteAll'
 };
 
-// REQUIREMENT: user can create a new todo
+// REQUIREMENT: user can create a new to-do
 const newTodo = scenario(
   {
     id: "newTodo"
@@ -36,7 +36,7 @@ const newTodo = scenario(
   }
 );
 
-// Additional REQUIREMENT: user must not create an empty todo
+// Additional REQUIREMENT: user must not create an empty to-do
 const noEmptyTodo = scenario(
   {
     id: "noEmptyTodo"
@@ -69,7 +69,7 @@ const toggleCompleteAll = scenario(
   }
 );
 
-// REQUIREMENT: user can toggle the completion-state of a single todo
+// REQUIREMENT: user can toggle the completion-state of a single to-do
 function toggleItemCompleted(todos: Todo[], id: string): Todo[] {
   return todos.map((todo: Todo) =>
     id === todo.id ? { ...todo, isCompleted: !todo.isCompleted } : todo
@@ -88,7 +88,7 @@ const toggleCompleteSingle = scenario(
   }
 );
 
-// REQUIREMENT: user can deleta a single todo
+// REQUIREMENT: user can delete a single to-do
 function removeTodo(todos: Todo[], id: string): Todo[] {
   return todos.filter((todo: Todo) => id !== todo.id);
 }
@@ -101,7 +101,7 @@ const itemCanBeDeleted = scenario(
   }
 );
 
-// REQUIREMENT: user can change a todo title
+// REQUIREMENT: user can change a to-do title
 function changeItemTitle(todos: Todo[], id: string, newTitle: string): Todo[] {
   return todos.map((todo: Todo) =>
     id === todo.id ? { ...todo, title: newTitle } : todo
@@ -116,7 +116,7 @@ const itemTitleCanBeChanged = scenario(
   }
 );
 
-// REQUIREMENT: user can clear all completed todos
+// REQUIREMENT: user can clear all completed to-dos
 function someCompleted(todos: Todo[]): boolean {
   return todos.some((t: Todo) => t.isCompleted);
 }
