@@ -19,19 +19,19 @@ const todoEvent = {
 };
 
 // REQUIREMENT: user can create a new todo
-function newTodo(title: string) {
-  return { id: utils.uuid(), title: title, isCompleted: false };
-}
-
-const newTodoCanBeAdded = scenario(
+const newTodo = scenario(
   {
-    id: "newTodoCanBeAdded"
+    id: "newTodo"
   },
   function* () {
     while (true) {
       const bid = yield askFor(todoEvent.addTodo);
-      const todo = newTodo(bid.payload);
-      yield set(todoEvent.todos, (currentTodos: any) => [todo, ...(currentTodos?.value || [])]);
+      const todo = {
+        id: utils.uuid(),
+        title: bid.payload,
+        isCompleted: false
+      };
+      yield set(todoEvent.todos, (todos: CachedItem<Todo[]>) => [todo, ...(todos?.value || [])]);
     }
   }
 );
@@ -133,7 +133,7 @@ const completedItemsCanBeCleared = scenario(
 
 export default function App() {
   const context = useScenarios((enable, event) => {
-    enable(newTodoCanBeAdded());
+    enable(newTodo());
     enable(noEmptyTodo());
     enable(toggleCompleteSingle());
     enable(toggleCompleteAll());
