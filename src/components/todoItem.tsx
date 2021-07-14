@@ -18,7 +18,7 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
   const onEditStart =
     dispatch?.startEditItem && dispatch.startEditItem(todoItem.id)
       ? (e: any) => {
-          dispatch.startEditItem(todoItem.id)();
+          dispatch.startEditItem(todoItem.id);
           if (inputRef && inputRef.current) inputRef.current.value = todoItem.title;
         }
       : undefined;
@@ -26,19 +26,19 @@ export const TodoItem = React.memo(function({ todoItem, dispatch, toggleCompleti
   const onDelete =
     dispatch?.deleteTodoItem && dispatch.deleteTodoItem(todoItem.id)
       ? (e: any) => {
-          dispatch.deleteTodoItem(todoItem.id)();
+          dispatch.deleteTodoItem(todoItem.id);
         }
       : undefined;
 
   const onChangeTitle = (e: any) => {
-    if (e.key === "Enter" && dispatch.setNewTodoTitle) dispatch?.setNewTodoTitle(e.target.value)();
-    else if (e.key === "Escape" && dispatch.abortEditItem) dispatch?.abortEditItem()();
+    if (e.key === "Enter" && dispatch.setNewTodoTitle) dispatch?.setNewTodoTitle(e.target.value);
+    else if (e.key === "Escape" && dispatch.abortEditItem) dispatch?.abortEditItem();
   };
 
   const onStopEdit =
     dispatch?.setNewTodoTitle && dispatch.setNewTodoTitle()
       ? (e: any) => {
-          dispatch.setNewTodoTitle(e.target.value)();
+          dispatch.setNewTodoTitle(e.target.value);
         }
       : undefined;
 
